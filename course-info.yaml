@@ -1,0 +1,11 @@
+type: hyperskill
+title: Colorizer API
+language: English
+summary: Color is essential in visual design. Colors can enhance our perception of
+  products. Perform color representation conversion, color harmony calculation, and
+  color modification in Python. Make your own artistic palette to get the color of
+  your dreams.<br/><br/>Learn more at <a href="https://hyperskill.org/projects/169?utm_source=ide&utm_medium=ide&utm_campaign=ide&utm_content=project-card">https://hyperskill.org/projects/169</a>
+programming_language: Python
+content:
+- Colorizer API
+mode: Study

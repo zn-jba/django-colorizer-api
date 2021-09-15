@@ -1,0 +1,92 @@
+<h2>Description</h2>
+
+<p>Some colors may look good when used together. It is called <strong>color harmony</strong>. The color wheel can help you with these harmonies. You may also have heard the term <strong>complementary harmony</strong>. Green works well with red, blue with orange, etc.<br>
+At this point, you need to handle <strong>a monochromatic harmony</strong>. It doesn’t employ the color wheel because a monochromatic harmony doesn’t change the hue, so it’s the simplest type of harmony to calculate.</p>
+
+<p>In this stage, create a harmony view that takes an HSV color in the request and if the “harmony” is “monochromatic”, it should return three colors: one base color, one <strong>shade</strong>, and one <strong>tint</strong>. Please, use <em>color-harmony/ </em>path_info to map <em>hostname:port/color-harmony/ </em>to the harmony view.</p>
+
+<p>A color shade<strong> </strong>is achieved by adding black to the color; decrease V (brightness) in HSV.<br>
+A color tint is achieved by adding white to the color; increase V (brightness) in HSV.</p>
+
+<p>The difference between HSV shade and tint values from the base color is 20. If the base color value (V) is 10 then the result would contain the following values: 10, 30 (shade), and 50 (tint).</p>
+
+<h2>Objectives</h2>
+
+<ol>
+	<li>Implement the monochromatic color harmony by adding a new harmony view.</li>
+	<li>Use the customized Serializer class to validate the color values.</li>
+</ol>
+
+<p><button
+        class="btn-sm btn-outline-secondary"
+        onclick="getElementById('hint-1458').style.display='inline'">
+        Hint
+      </button>
+      <div id="hint-1458" style="display:none;">Please, round your numbers at the very last stage only.</div></p>
+
+<h2>Examples</h2>
+
+<p>The greater-than symbol followed by a space (<code class="language-json">&gt; </code>) represents the user input. Note that it's not part of the input.</p>
+
+<p><strong>Example 1: </strong><em>A correct request</em></p>
+
+<p>Request:</p>
+
+<pre><code class="language-json">{
+  "representation": "hsv",
+  "color": [
+    128,
+    85,
+    95
+  ],
+  "harmony": "monochromatic"
+}</code></pre>
+
+<p> Response:</p>
+
+<ul>
+	<li>HTTP status code: 200</li>
+</ul>
+
+<pre><code class="language-json">{
+  "representation": "hsv",
+  "color_1": [
+    128.0,
+    85.0,
+    55.0
+  ],
+  "color_2": [
+    128.0,
+    85.0,
+    75.0
+  ],
+  "color_3": [
+    128.0,
+    85.0,
+    95.0
+  ]
+}</code></pre>
+
+<p><strong>Example 2: </strong><em>A wrong request:</em></p>
+
+<p>Request:</p>
+
+<pre><code class="language-json">{
+  "representation": "hsv",
+  "color": [
+    128,
+    850,
+    95
+  ],
+  "harmony": "mono"
+}</code></pre>
+
+<p> Response:</p>
+
+<ul>
+	<li>HTTP status code: 400</li>
+</ul>
+
+<pre><code class="language-json">{
+  "error": "Invalid data."
+}</code></pre>

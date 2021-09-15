@@ -1,0 +1,128 @@
+<h2>Description</h2>
+
+<p>Our API can carry out a lot of operations, that's great. To make it even more useful, we can include a<strong> complementary color harmony</strong>. The basics of this harmony type are very simple. You need to pick a color you like on the color wheel and find the color on the opposite side.<br>
+Please, be aware that the HSV color wheel (the one that uses the HSV hues from 0 to 360 degrees) does NOT work with the complementary values. For example, the red color [0, 100, 100] is complementary to the cyan color [180, 100, 100] on the HSV wheel, however, green is thought to be the complementary color to red. Color harmonies, of course, are subject to taste.</p>
+
+<p>But things are not what they seem. Many implementations of color harmonies on the web are inaccurate, and you have to find out what clicks for you. A quick internet search will show you the images of different artistic color wheels that can be used to get the colors that look good together.</p>
+
+<ul>
+	<li>BYR color wheel:</li>
+</ul>
+
+<p style="text-align: center;"><img alt="BYR color wheel" height="350" src="https://ucarecdn.com/ff14f0f9-5547-4bb3-99d6-d6dd7be1ef57/" width="350"></p>
+
+<p> </p>
+
+<ul>
+	<li>HSV color wheel:</li>
+</ul>
+
+<p style="text-align: center;"><img alt="HSV color wheel" height="350" src="https://ucarecdn.com/7e68ddce-2afe-4834-9aa4-0f53713b7748/" width="431"></p>
+
+<p>As you can see, the HSV wheel differs in many ways. For example, red is thought to look good with green, while the HSV wheel shows that red and cyan complement one another.</p>
+
+<p><br>
+Your algorithm could do something like this:</p>
+
+<ol>
+	<li>Extract an HSV hue of the A color.</li>
+	<li>Put it on the artist's color wheel to get the artistic hue value.</li>
+	<li>Add 180 to get the complementary hue of the B color.</li>
+	<li>Then put the B color hue back on the HSV wheel to obtain the HSV hue of the B color.</li>
+</ol>
+
+<p>Remember that HSV is split into equal parts (degrees) of red, yellow, green, cyan, blue, and magenta, each at 60 degrees increments of the 360 circle. Hues that fall between the mapping boundaries are interpolated linearly, so to map the HSV hue 15 to the artist's wheel (hsv_to_art), we need to do the following: <span class="math-tex">\({15 / 30} * 60 = 30\)</span>.</p>
+
+<pre><code class="language-python">hsv_to_art = {
+    0: 0,  # red
+    30: 60,  # orange
+    60: 120,  # yellow
+    120: 180,  # green
+    180: 210,  # cyan
+    240: 240,  # blue
+    300: 300,  # violet
+    330: 330,  # magenta
+    360: 360  # red
+}</code></pre>
+
+<p>This color wheel is very popular. There may be other implementations that are considered better or could yield better color harmonies. For example, the implementation by Adobe. It is widely used in the digital design world and closely related to the traditional color wheel as well as Newton's color wheel:</p>
+
+<pre><code class="language-python">adobe_artist_wheel = {
+    0: 0,  # red
+    35: 60,  # orange
+    60: 122,  # yellow
+    120: 165,  # green
+    180: 218,  # cyan
+    240: 275,  # blue
+    300: 330,  # magenta
+    360: 360  # red
+}</code></pre>
+
+<h2>Objectives</h2>
+
+<ol>
+	<li>Readjust your monochromatic view to include representation, color, and harmony. If the harmony is complementary, the view returns the original color and one complementary color in the response.</li>
+	<li>Use the Adobe implementation of the artist's color wheel to map hues between the HSV and the artist's color wheel.</li>
+</ol>
+
+<h2>Examples</h2>
+
+<p>The greater-than symbol followed by a space (<code class="language-python">&gt; </code>) represents the user input. Note that it's not part of the input.</p>
+
+<p><strong> Example 1: </strong><em>A correct request</em></p>
+
+<p>Request:</p>
+
+<pre><code class="language-json">{
+  "representation": "hsv",
+  "color": [
+    128,
+    85,
+    95
+  ],
+  "harmony": "complementary"
+}</code></pre>
+
+<p> Response:</p>
+
+<ul>
+	<li>HTTP status code: 200</li>
+</ul>
+
+<pre><code class="language-json">{
+  "representation": "hsv",
+  "color": [
+    128.0,
+    85.0,
+    95.0
+  ],
+  "complementary": [
+    344,
+    85.0,
+    95.0
+  ]
+}</code></pre>
+
+<p><strong>Example 2: </strong><em>A wrong request</em></p>
+
+<p>Request:</p>
+
+<pre><code class="language-json">{
+  "representation": "hsv",
+  "color": [
+    128,
+    850,
+    95
+  ],
+  "harmony": "complementary"
+}</code></pre>
+
+<p> Response:</p>
+
+<ul>
+	<li>HTTP status code: 400</li>
+</ul>
+
+<pre><code class="language-json">{
+  "error": "Invalid data."
+}</code></pre>
