@@ -23,23 +23,11 @@ files:
 
     # Create your tests here.
   learner_created: false
-- name: api/models.py
-  visible: true
-  text: |
-    from django.db import models
-
-    # Create your models here.
-  learner_created: false
 - name: api/migrations/__init__.py
   visible: true
   learner_created: false
 - name: api/__init__.py
   visible: true
-  learner_created: false
-- name: api/serializers.py
-  visible: true
-  text: |
-    # Create your serializers here.
   learner_created: false
 - name: manage.py
   visible: true
@@ -785,9 +773,45 @@ files:
 - name: api/migrations/0002_alter_hsvcolor_id.py
   visible: true
   learner_created: true
+- name: api/serializers.py
+  visible: true
+  text: |
+    # Create your serializers here.
+  learner_created: false
+- name: api/models.py
+  visible: true
+  text: |
+    from django.db import models
+
+    # Create your models here.
+  learner_created: false
+- name: api/serializers/__init__.py
+  visible: true
+  learner_created: true
+- name: api/models/operations.py
+  visible: true
+  learner_created: true
+- name: api/serializers/operations.py
+  visible: true
+  learner_created: true
+- name: api/fixtures/color_operations.json
+  visible: true
+  learner_created: true
+- name: api/models/colors.py
+  visible: true
+  learner_created: true
+- name: api/models/__init__.py
+  visible: true
+  learner_created: true
+- name: api/migrations/0003_coloroperation.py
+  visible: true
+  learner_created: true
+- name: api/_models.py
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/169/stages/876/implement#comment
 status: Solved
 feedback:
   message: Congratulations!
-  time: Wed, 15 Sep 2021 21:01:09 UTC
-record: -1
+  time: Thu, 16 Sep 2021 21:03:42 UTC
+record: 1

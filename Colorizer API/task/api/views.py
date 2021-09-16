@@ -1,42 +1,52 @@
+from django.http.response import JsonResponse
+from rest_framework import status
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from .models import HSVColor
+from .models.colors import HSVColor
+
+from .models import ColorOperation
+from .serializers import ColorOperationSerializer
+
+
+class ColorOperationsView(APIView):
+    def get(self, request: Request) -> JsonResponse:
+        operation = ColorOperation.objects.all()
+
+        countries_serializer = ColorOperationSerializer(operation, many=True)
+        return JsonResponse(countries_serializer.data, safe=False)
+
+    def post(self, request: Request) -> JsonResponse:
+        operation_data = JSONParser().parse(request)
+        operation_serializer = ColorOperationSerializer(data=operation_data)
+        if operation_serializer.is_valid():
+            operation_serializer.save()
+            return JsonResponse(operation_serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(operation_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # def put(self, request: Request):
+    #     pass
+    #
+    # def patch(self, request: Request):
+    #     pass
+    #
+    # def delete(self, request: Request):
+    #     pass
 
 
 class ModifyColorView(APIView):
+    # def get(self, request: Request, format=None):
+    #     colors = HSVColor.objects.all()
+    #     serializer = HSVColorSerializer(colors, many=True)
+    #     return Response(serializer.data)
+
     def post(self, request: Request):
-        data = request.data
+        if (operation := request.data.get("operation", None)) not in HSVColor.HSV_OPERATIONS:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if (operation := data["operation"]) not in HSVColor.HSV_OPERATIONS:
-            pass
+        color = HSVColor(request.data)
+        modified_data = color.operate(operation, commit=True)
 
-        color = HSVColor(representation=data["representation"],
-                         h_value=data["color"][0],
-                         s_value=data["color"][1],
-                         v_value=data["color"][2],
-                         operation=operation,
-                         amount=data["amount"])
-        original_h = color.h_value
-        original_s = color.s_value
-        original_v = color.v_value
-
-        color.operate(operation)
-
-        modified_data = {
-            "representation": color.representation,
-            "color": [
-                original_h,
-                original_s,
-                original_v,
-            ],
-            "operation": color.operation,
-            "modified_color": [
-                color.h_value,
-                color.s_value,
-                color.v_value,
-            ]
-        }
-
-        return Response(modified_data)
+        return Response(modified_data, status=status.HTTP_200_OK)
