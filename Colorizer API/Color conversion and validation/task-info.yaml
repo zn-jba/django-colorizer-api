@@ -601,9 +601,6 @@ files:
                     return CheckResult.wrong((self.msg_200_invalid + ". (complementary)" + ". path_info: /color-harmony/"))
             return CheckResult.correct()
   learner_created: false
-- name: test/__init__.py
-  visible: false
-  learner_created: false
 - name: tests.py
   visible: false
   text: |
@@ -845,6 +842,18 @@ files:
 
     # Create your views here.
   learner_created: false
+- name: test/__init__.py
+  visible: false
+  learner_created: false
+- name: api/utility/__init__.py
+  visible: true
+  learner_created: true
+- name: api/utility/colors.py
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/169/stages/877/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Thu, 16 Sep 2021 23:33:54 UTC
 record: 2

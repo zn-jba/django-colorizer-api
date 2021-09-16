@@ -4,20 +4,9 @@ from ..models.operations import ColorOperation
 
 
 class ColorOperationSerializer(serializers.ModelSerializer):
-    # color = serializers.SerializerMethodField()
-
     class Meta:
         model = ColorOperation
         fields = ("representation", "operation", "color_a", "color_b", "color_c", "amount")
-        # fields = "__all__"
-        # exclude = ("id", "color_a", "color_b", "color_c")
-
-    # def get_color(self, object: ColorOperation) -> list[int]:
-    #     return [
-    #         object.color_a,
-    #         object.color_b,
-    #         object.color_c
-    #     ]
 
     def to_internal_value(self, data):
         data["color_a"], data["color_b"], data["color_c"] = data["color"]
