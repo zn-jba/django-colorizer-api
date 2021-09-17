@@ -11,3 +11,11 @@ class Color(ABC):
     @abstractmethod
     def to_list(self) -> list[int]:
         ...
+
+    @abstractmethod
+    def to_min_range(self) -> None:
+        ...
+
+    @abstractmethod
+    def to_max_range(self) -> None:
+        ...

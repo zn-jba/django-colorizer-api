@@ -2,43 +2,43 @@ from . import ColorSpace
 from .base import Color
 
 
-class HSVColor(Color):
-    def __init__(self, hue: int, saturation: int, value: int) -> None:
-        super().__init__(hue, saturation, value)
+class HSLColor(Color):
+    def __init__(self, h: int, s: int, l: int) -> None:
+        super().__init__(h, s, l)
 
     @property
     def hue(self) -> int:
         return self._a
 
     @hue.setter
-    def hue(self, new_value: int) -> None:
-        self._a = new_value
+    def hue(self, value: int) -> None:
+        self._a = value
 
     @property
     def saturation(self) -> int:
         return self._b
 
     @saturation.setter
-    def saturation(self, new_value: int) -> None:
-        self._b = new_value
+    def saturation(self, value: int) -> None:
+        self._b = value
 
     @property
-    def value(self) -> int:
+    def light(self) -> int:
         return self._c
 
-    @value.setter
-    def value(self, new_value: int) -> None:
-        self._c = new_value
+    @light.setter
+    def light(self, value: int) -> None:
+        self._c = value
 
     def to_max_range(self) -> None:
         self.hue *= ColorSpace.HUE_MAX
         self.saturation *= ColorSpace.SATURATION_MAX
-        self.value *= ColorSpace.VALUE_MAX
+        self.light *= ColorSpace.LIGHT_MAX
 
     def to_min_range(self) -> None:
         self.hue /= ColorSpace.HUE_MAX
         self.saturation /= ColorSpace.SATURATION_MAX
-        self.value /= ColorSpace.VALUE_MAX
+        self.light /= ColorSpace.LIGHT_MAX
 
     def to_list(self) -> list[int]:
-        return [self.hue, self.saturation, self.value]
+        return [self.hue, self.saturation, self.light]
