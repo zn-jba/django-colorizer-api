@@ -9,9 +9,8 @@ from rest_framework.views import APIView
 from .models import ColorOperation
 from .models.colors import HSVColor
 from .serializers import ColorOperationSerializer
-from .utility.colors import ColorConverter
-from .utility.colors import is_hsv_color_values_valid
-from .utility.colors import is_rgb_color_values_valid
+
+from .colors.utility import ColorConverter
 
 
 class ColorOperationsView(APIView):
@@ -44,9 +43,9 @@ class ColorConversionView(APIView):
             is_valid = False
 
         if is_valid and representation == "hsv":
-            is_valid = is_hsv_color_values_valid(colors)
+            is_valid = ColorConverter.is_hsv_color_values_valid(colors)
         elif is_valid and representation == "rgb":
-            is_valid = is_rgb_color_values_valid(colors)
+            is_valid = ColorConverter.is_rgb_color_values_valid(colors)
 
         if not is_valid:
             return Response({"error": "Invalid data."},
@@ -78,7 +77,7 @@ class ModifyColorView(APIView):
 
         if is_valid:
             colors = request.data.get("color", None)
-            is_valid = is_hsv_color_values_valid(colors)
+            is_valid = ColorConverter.is_hsv_color_values_valid(colors)
 
         if is_valid:
             color = HSVColor(request.data)
