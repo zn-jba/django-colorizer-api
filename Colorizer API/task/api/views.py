@@ -6,20 +6,23 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from .models import ColorOperation
-from .models.colors import HSVColor
-from .serializers import ColorOperationSerializer
-
 from .colors.utility import ColorConverter
+from .colors.utility import ColorModifier
+from .colors.utility import ColorValidator
+
+from .models import ColorOperation
+from .serializers import ColorOperationSerializer
 
 
 class ColorOperationsView(APIView):
-    def get(self, request: Request) -> JsonResponse:
+    @staticmethod
+    def get(request: Request) -> JsonResponse:
         operation = ColorOperation.objects.all()
         countries_serializer = ColorOperationSerializer(operation, many=True)
         return JsonResponse(countries_serializer.data, safe=False)
 
-    def post(self, request: Request) -> JsonResponse:
+    @staticmethod
+    def post(request: Request) -> JsonResponse:
         operation_data = JSONParser().parse(request)
         operation_serializer = ColorOperationSerializer(data=operation_data)
         if operation_serializer.is_valid():
@@ -29,60 +32,79 @@ class ColorOperationsView(APIView):
 
 
 class ColorConversionView(APIView):
-    def post(self, request: Request):
-        is_valid = True
-        data = request.data
+    @staticmethod
+    def is_request_data_valid(data: dict) -> bool:
         representation = data.get("representation", None)
-        colors = data.get("color", None)
+        if not representation or representation not in ColorConverter.COLOR_SPACE_MODELS:
+            return False
+
+        color = data.get("color", None)
+        if not color:
+            return False
+
         conversion = data.get("conversion", None)
+        if not conversion or conversion not in ColorConverter.COLOR_SPACE_MODELS:
+            return False
 
-        if not conversion:
-            is_valid = False
+        if not ColorValidator.is_color_valid(representation, color):
+            return False
 
-        if request.data.get("representation", None) not in ("rgb", "hsv"):
-            is_valid = False
+        return True
 
-        if is_valid and representation == "hsv":
-            is_valid = ColorConverter.is_hsv_color_values_valid(colors)
-        elif is_valid and representation == "rgb":
-            is_valid = ColorConverter.is_rgb_color_values_valid(colors)
-
-        if not is_valid:
+    def post(self, request: Request):
+        if not self.is_request_data_valid(request.data):
             return Response({"error": "Invalid data."},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        context = {
-            "color": data.get("color", ""),
-        }
+        representation = request.data.get("representation", None)
+        color = request.data.get("color", None)
+        conversion = request.data.get("conversion", None)
 
-        if conversion == "rgb":
-            rgb_colors = ColorConverter.convert_hsv_to_rgb(*colors)
-            context["converted_color"] = rgb_colors
-        elif conversion == "hsv":
-            hsv_colors = ColorConverter.convert_rgb_to_hsv(*colors)
-            context["converted_color"] = hsv_colors
+        context = {
+            "color": color,
+            "converted_color": ColorConverter.convert(representation, conversion, color)
+        }
 
         return Response(context, status=status.HTTP_200_OK)
 
 
 class ModifyColorView(APIView):
+    @staticmethod
+    def is_request_data_valid(data: dict) -> bool:
+        representation = data.get("representation")
+        if not representation or representation not in ColorConverter.COLOR_SPACE_MODELS:
+            return False
+
+        operation = data.get("operation", None)
+        if not operation or operation not in ColorModifier.HSV_OPERATIONS:
+            return False
+
+        color = data.get("color", None)
+        if not color:
+            return False
+
+        if not ColorValidator.is_color_valid(representation, color):
+            return False
+
+        return True
+
     def post(self, request: Request):
-        is_valid = True
+        if not self.is_request_data_valid(request.data):
+            return Response({"error": "Invalid data."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        if (operation := request.data.get("operation", None)) not in HSVColor.HSV_OPERATIONS:
-            is_valid = False
+        representation = request.data.get("representation")
+        color = request.data.get("color")
+        operation = request.data.get("operation")
+        amount = request.data.get("amount")
 
-        if request.data.get("representation", None) not in ("rgb", "hsv"):
-            is_valid = False
+        modified = ColorModifier.modify(representation, operation, amount, color)
 
-        if is_valid:
-            colors = request.data.get("color", None)
-            is_valid = ColorConverter.is_hsv_color_values_valid(colors)
+        context = {
+            "representation": representation,
+            "color": color,
+            "operation": operation,
+            "modified_color": modified
+        }
 
-        if is_valid:
-            color = HSVColor(request.data)
-            modified_data = color.operate(operation, commit=True)
-            return Response(modified_data, status=status.HTTP_200_OK)
-
-        return Response({"error": "Invalid data."},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response(context, status=status.HTTP_200_OK)

@@ -2,8 +2,6 @@ from django.db import models
 
 
 class HSVColor(models.Model):
-    HSV_OPERATIONS = ("saturate", "desaturate")
-
     representation = models.CharField(max_length=3)
     h_value = models.PositiveIntegerField()
     s_value = models.PositiveIntegerField()
@@ -26,32 +24,3 @@ class HSVColor(models.Model):
     @property
     def colors(self) -> tuple[int, int, int]:
         return self.h_value, self.s_value, self.v_value
-
-    def operate(self, operation: str, commit: bool = False) -> dict:
-        modified_data = {
-            "representation": self.representation,
-            "color": [*self.colors],
-            "operation": self.operation
-        }
-
-        if operation == "saturate":
-            self.saturation(commit)
-        elif operation == "desaturate":
-            self.saturation(commit, desaturate=True)
-
-        modified_data["modified_color"] = [*self.colors]
-        return modified_data
-
-    def saturation(self, commit: bool, desaturate: bool = False):
-        if desaturate:
-            value = self.s_value - round(self.s_value * (self.amount / 100))
-        else:
-            value = self.s_value + round(self.s_value * (self.amount / 100))
-
-        if value < 0:
-            value = 0
-        elif value > 100:
-            value = 100
-
-        if commit:
-            self.s_value = value

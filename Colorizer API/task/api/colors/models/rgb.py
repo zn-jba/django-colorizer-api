@@ -1,5 +1,5 @@
-from . import ColorSpace
 from .base import Color
+from .base import ColorSpace
 
 
 class RGBColor(Color):
