@@ -51,7 +51,7 @@ class ColorConversionView(APIView):
 
         return True
 
-    def post(self, request: Request):
+    def post(self, request: Request) -> Response:
         if not self.is_request_data_valid(request.data):
             return Response({"error": "Invalid data."},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -64,6 +64,50 @@ class ColorConversionView(APIView):
             "color": color,
             "converted_color": ColorConverter.convert(representation, conversion, color)
         }
+
+        return Response(context, status=status.HTTP_200_OK)
+
+
+class ColorHarmonyView(APIView):
+    @staticmethod
+    def is_request_data_valid(data: dict) -> bool:
+        representation = data.get("representation", None)
+        if not representation or representation != "hsv":
+            return False
+
+        harmony = data.get("harmony", None)
+        if not harmony or harmony != "monochromatic":
+            return False
+
+        color = data.get("color", None)
+        if not color:
+            return False
+
+        if not ColorValidator.is_color_valid(representation, color):
+            return False
+
+        return True
+
+    def post(self, request: Request) -> Response:
+        if not self.is_request_data_valid(request.data):
+            return Response({"error": "Invalid data."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        representation = request.data.get("representation")
+        color = request.data.get("color")
+
+        hsv_value = color[-1]
+        base = hsv_value - 40 if hsv_value >= 40 else 0
+        shade = base + 20
+        tint = shade + 20
+
+        context = {
+            "representation": representation,
+        }
+
+        values = [base, shade, tint]
+        for index, value in enumerate(values):
+            context[f"color_{index + 1}"] = [color[0], color[1], value]
 
         return Response(context, status=status.HTTP_200_OK)
 
@@ -88,7 +132,7 @@ class ModifyColorView(APIView):
 
         return True
 
-    def post(self, request: Request):
+    def post(self, request: Request) -> Response:
         if not self.is_request_data_valid(request.data):
             return Response({"error": "Invalid data."},
                             status=status.HTTP_400_BAD_REQUEST)
