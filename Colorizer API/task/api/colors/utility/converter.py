@@ -191,25 +191,16 @@ class ColorValidator:
     @staticmethod
     def is_hsl_color_valid(hsl: list[int]) -> bool:
         max_ranges = [ColorSpace.HUE_MAX, ColorSpace.SATURATION_MAX, ColorSpace.LIGHT_MAX]
-        for value, max_range in zip(hsl, max_ranges):
-            if not 0 <= value <= max_range:
-                return False
-        return True
+        return all([0 <= value <= max_range for value, max_range in zip(hsl, max_ranges)])
 
     @staticmethod
     def is_hsv_color_valid(hsv: list[int]) -> bool:
         max_ranges = [ColorSpace.HUE_MAX, ColorSpace.SATURATION_MAX, ColorSpace.VALUE_MAX]
-        for value, max_range in zip(hsv, max_ranges):
-            if not 0 <= value <= max_range:
-                return False
-        return True
+        return all([0 <= value <= max_range for value, max_range in zip(hsv, max_ranges)])
 
     @staticmethod
     def is_rgb_color_valid(rgb: list[int]) -> bool:
-        for color in rgb:
-            if not 0 <= color <= ColorSpace.RGB_MAX:
-                return False
-        return True
+        return all([0 <= color <= ColorSpace.RGB_MAX for color in rgb])
 
 
 class ColorWheel:
