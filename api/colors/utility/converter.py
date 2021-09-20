@@ -20,6 +20,10 @@ from ..models.hsv import HSVColor
 from ..models.rgb import RGBColor
 
 
+# TODO: put a decorator on all methods that return hex code, so it is easier
+# to put a modifier to the return value, e.g. upper() or lower()
+
+
 class ColorConverter:
     COLOR_SPACE_MODELS = ("hex", "hsl", "hsv", "rgb")
 

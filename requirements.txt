@@ -1,4 +1,5 @@
-Django
-https://github.com/hyperskill/hs-test-python/archive/release.tar.gz
-requests
+django
 djangorestframework
+matplotlib
+numpy
+requests
