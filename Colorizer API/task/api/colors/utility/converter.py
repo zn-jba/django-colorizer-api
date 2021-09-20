@@ -3,9 +3,13 @@ Source:
 https://docs.python.org/3/library/colorsys.html
 https://matplotlib.org/stable/api/_as_gen/matplotlib.colors.to_rgb.html
 https://matplotlib.org/stable/api/_as_gen/matplotlib.colors.to_hex.html
+
+# ColorHarmonifier.complementary() credit goes to Hubert Sieczka
+https://numpy.org/doc/stable/reference/generated/numpy.interp.html
 """
 
 import colorsys
+from numpy import interp
 import re
 
 import matplotlib.colors as mpl
@@ -14,10 +18,6 @@ from ..models.base import ColorSpace
 from ..models.hsl import HSLColor
 from ..models.hsv import HSVColor
 from ..models.rgb import RGBColor
-
-
-# TODO: put a decorator on all methods that return hex code, so it is easier
-#       to put a modifier to the return value, e.g. upper() or lower()
 
 
 class ColorConverter:
@@ -145,6 +145,38 @@ class ColorConverter:
         return hsl_colors
 
 
+class ColorHarmonifier:
+    @staticmethod
+    def monochromatic(hsv: list[int]) -> dict:
+        base = hsv[2]
+
+        if base < 20:
+            monochromatic = [base, base + 20, base + 40]
+        elif 20 <= base <= 80:
+            monochromatic = [base - 20, base, base + 20]
+        else:
+            monochromatic = [base - 40, base - 20, base]
+
+        result = dict()
+        for index, value in enumerate(monochromatic):
+            result[f"color_{index + 1}"] = [hsv[0], hsv[1], value]
+        return result
+
+    @staticmethod
+    def complementary(hsv: list[int]) -> list[int]:
+        original_hue = hsv[0]
+
+        temp_hue = interp(original_hue, list(ColorWheel.ADOBE.keys()),
+                          list(ColorWheel.ADOBE.values()))
+        temp_hue += 180
+        if temp_hue > 360:
+            temp_hue -= 360
+
+        complementary_hue = round(interp(temp_hue, list(ColorWheel.ADOBE.values()),
+                                         list(ColorWheel.ADOBE.keys())))
+        return [complementary_hue, hsv[1], hsv[2]]
+
+
 class ColorValidator:
     @staticmethod
     def is_color_valid(representation: str, color: list[int] or str) -> bool:
@@ -178,6 +210,19 @@ class ColorValidator:
             if not 0 <= color <= ColorSpace.RGB_MAX:
                 return False
         return True
+
+
+class ColorWheel:
+    ADOBE = {
+        0: 0,  # red
+        35: 60,  # orange
+        60: 122,  # yellow
+        120: 165,  # green
+        180: 218,  # cyan
+        240: 275,  # blue
+        300: 330,  # magenta
+        360: 360  # red
+    }
 
 
 CONVERT = {

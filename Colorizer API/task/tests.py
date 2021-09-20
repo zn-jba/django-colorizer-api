@@ -26,6 +26,11 @@ class ColorizerTestRunner(ColorizerTest):
         ColorizerTest.stage3_convert_test11,
         ColorizerTest.stage3_convert_test12,
         ColorizerTest.stage3_convert_test_invalid_data,
+        # stage 4
+        ColorizerTest.stage4_monochromatic_test,
+        ColorizerTest.stage4_monochromatic_test_invalid_data,
+        # stage 5
+        ColorizerTest.stage5_complementary_test,
     ]
 
     @dynamic_test(data=funcs, time_limit=0)

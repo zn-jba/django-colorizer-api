@@ -7,6 +7,7 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from .colors.utility import ColorConverter
+from .colors.utility import ColorHarmonifier
 from .colors.utility import ColorModifier
 from .colors.utility import ColorValidator
 
@@ -76,7 +77,7 @@ class ColorHarmonyView(APIView):
             return False
 
         harmony = data.get("harmony", None)
-        if not harmony or harmony != "monochromatic":
+        if not harmony or harmony not in ("monochromatic", "complementary"):
             return False
 
         color = data.get("color", None)
@@ -95,19 +96,17 @@ class ColorHarmonyView(APIView):
 
         representation = request.data.get("representation")
         color = request.data.get("color")
-
-        hsv_value = color[-1]
-        base = hsv_value - 40 if hsv_value >= 40 else 0
-        shade = base + 20
-        tint = shade + 20
+        harmony = request.data.get("harmony")
 
         context = {
             "representation": representation,
         }
 
-        values = [base, shade, tint]
-        for index, value in enumerate(values):
-            context[f"color_{index + 1}"] = [color[0], color[1], value]
+        if harmony == "monochromatic":
+            context |= ColorHarmonifier.monochromatic(color)
+        elif harmony == "complementary":
+            context["color"] = color
+            context["complementary"] = ColorHarmonifier.complementary(color)
 
         return Response(context, status=status.HTTP_200_OK)
 
